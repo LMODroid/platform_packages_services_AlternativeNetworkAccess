@@ -449,15 +449,16 @@ public class OpportunisticNetworkService extends Service {
     @VisibleForTesting
     protected void initialize(Context context) {
         mContext = context;
+        Context deviceProtectedContext = mContext.createDeviceProtectedStorageContext();
         createMsgHandler();
         mTelephonyManager = TelephonyManager.from(mContext);
         mProfileSelector = new ONSProfileSelector(mContext, mProfileSelectionCallback);
-        mSharedPref = mContext.createDeviceProtectedStorageContext().getSharedPreferences(
+        mSharedPref = deviceProtectedContext.getSharedPreferences(
                 PREF_NAME, Context.MODE_PRIVATE);
         mSubscriptionManager = (SubscriptionManager) mContext.getSystemService(
                 Context.TELEPHONY_SUBSCRIPTION_SERVICE);
         mONSConfigInputHashMap = new HashMap<String, ONSConfigInput>();
-        mONSStats = new ONSStats(mContext, mSubscriptionManager);
+        mONSStats = new ONSStats(deviceProtectedContext, mSubscriptionManager);
         mContext.registerReceiver(mBroadcastReceiver,
             new IntentFilter(TelephonyIntents.ACTION_SIM_STATE_CHANGED));
         enableOpportunisticNetwork(getPersistentEnableState());
